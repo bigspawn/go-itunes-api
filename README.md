@@ -8,3 +8,4 @@ TODO:
 - [ ] add http options
 - [ ] add error handling (specify error)
 - [ ] add http req-resp logging
+- [ ] impl lookup
