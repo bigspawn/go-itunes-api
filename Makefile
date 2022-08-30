@@ -6,6 +6,7 @@ gen:
 
 clean:
 	@go clean ./...
+	@go mod tidy -v
 
 lint:
 	@go vet ./...
