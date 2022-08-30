@@ -86,13 +86,17 @@ type SearchRequest struct {
 	Explicit bool
 }
 
-func (r SearchRequest) GetURLValues() (url.Values, error) {
+func (r *SearchRequest) Validate() error {
 	if r.Term == "" {
-		return nil, fmt.Errorf("field 'Term' is required")
+		return fmt.Errorf("term is required")
 	}
 	if r.Country == "" {
-		return nil, fmt.Errorf("field 'Country' is required")
+		return fmt.Errorf("country is required")
 	}
+	return nil
+}
+
+func (r SearchRequest) GetURLValues() url.Values {
 	v := url.Values{}
 	v.Set("term", r.Term)
 	v.Set("country", r.Country)
@@ -122,7 +126,7 @@ func (r SearchRequest) GetURLValues() (url.Values, error) {
 	} else {
 		v.Set("explicit", "No")
 	}
-	return v, nil
+	return v
 }
 
 type SearchResponse struct {
@@ -161,14 +165,14 @@ func NewClient(opt ClientOption) (*Client, error) {
 }
 
 func (c *Client) Search(ctx context.Context, r SearchRequest) (SearchResponse, error) {
-	v, err := r.GetURLValues()
+	err := r.Validate()
 	if err != nil {
 		return SearchResponse{}, err
 	}
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		fmt.Sprint(SearchPath, "?", v.Encode()),
+		fmt.Sprint(SearchPath, "?", r.GetURLValues().Encode()),
 		nil,
 	)
 	if err != nil {
