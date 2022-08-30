@@ -2,6 +2,8 @@
 
 Go client for iTunes search API.
 
+[Documentation](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html).
+
 TODO:
 
 - [ ] add tests
