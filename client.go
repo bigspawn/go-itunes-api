@@ -12,7 +12,8 @@ import (
 
 const (
 	APIPath    = "https://itunes.apple.com"
-	SearchPath = APIPath + "/search"
+	SearchPath = "/search"
+	US         = "US"
 )
 
 const DefaultHTTPTimeout = 60 * time.Second
@@ -145,14 +146,19 @@ type API interface {
 }
 
 type ClientOption struct {
+	Host    string
 	Timeout time.Duration
 }
 
 type Client struct {
 	client *http.Client
+	host   string
 }
 
 func NewClient(opt ClientOption) (*Client, error) {
+	if opt.Host == "" {
+		opt.Host = APIPath
+	}
 	if opt.Timeout == 0 {
 		opt.Timeout = DefaultHTTPTimeout
 	}
@@ -161,6 +167,7 @@ func NewClient(opt ClientOption) (*Client, error) {
 			Transport: new(http.Transport),
 			Timeout:   opt.Timeout,
 		},
+		host: opt.Host,
 	}, nil
 }
 
@@ -172,7 +179,7 @@ func (c *Client) Search(ctx context.Context, r SearchRequest) (SearchResponse, e
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodGet,
-		fmt.Sprint(SearchPath, "?", r.GetURLValues().Encode()),
+		fmt.Sprint(c.host, SearchPath, "?", r.GetURLValues().Encode()),
 		nil,
 	)
 	if err != nil {
